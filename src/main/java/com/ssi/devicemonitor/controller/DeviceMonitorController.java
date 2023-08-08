@@ -2,14 +2,13 @@ package com.ssi.devicemonitor.controller;
 
 import com.ssi.devicemonitor.entity.Device;
 import com.ssi.devicemonitor.entity.DeviceMonitor;
-import com.ssi.devicemonitor.entity.GeneralDevice;
+import com.ssi.devicemonitor.entity.HardwareDevice;
+import com.ssi.devicemonitor.entity.SoftwareDevice;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.util.Random;
-import java.util.Timer;
 import java.util.TimerTask;
 
 public class DeviceMonitorController {
@@ -22,15 +21,30 @@ public class DeviceMonitorController {
     @FXML
     private Button addDeviceButton;
 
+    @FXML
+    private TextField deviceTypeTextField;
+
+    @FXML
+    private ToggleGroup typeToggleGroup;
+
     private DeviceMonitor deviceMonitor;
+
+    private Device selectedDevice;
+
+    @FXML
+    private TextField menufactorerTextField;
+    @FXML
+    private TextField VersionTextField;
+    @FXML
+    private Label deviceRefreshTime;
 
 
     public void initialize() {
         deviceMonitor = new DeviceMonitor();
 
-        deviceMonitor.addDevice(new GeneralDevice("Device 1"));
-        deviceMonitor.addDevice(new GeneralDevice("Device 2"));
-        deviceMonitor.addDevice(new GeneralDevice("Device 3"));
+        deviceMonitor.addDevice(new HardwareDevice("Device 1" , "hardware","Sony","v1.01"));
+        deviceMonitor.addDevice(new HardwareDevice("Device 2","hardware","Sony","v1.20"));
+        deviceMonitor.addDevice(new HardwareDevice("Device 3","software","Sony","v2"));
 
         deviceListView.setItems(FXCollections.observableList(deviceMonitor.getDevices()));
         deviceListView.setCellFactory(deviceListView -> new DeviceListCell());
@@ -45,7 +59,7 @@ public class DeviceMonitorController {
                 deviceMonitor.removeDevice(selectedDevice);
             }
         });
-
+        refreshListView();
         contextMenu.getItems().addAll(removeItem);
         deviceListView.setContextMenu(contextMenu);
 
@@ -62,11 +76,85 @@ public class DeviceMonitorController {
 
     @FXML
     private void addDevice() {
+        refreshListView();
         String deviceName = deviceNameTextField.getText();
-        Device newDevice = new GeneralDevice(deviceName);
+        if(deviceAlrdayExist(deviceName)){
+            deviceNameTextField.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        String deviceType = deviceTypeTextField.getText().toLowerCase();
+        Device newDevice;
+        if(deviceType.equals("software")){
+            newDevice= new SoftwareDevice(deviceName,deviceType,menufactorerTextField.getText(),VersionTextField.getText());
+
+        }
+        else if(deviceType.equals("hardware")){
+            newDevice= new SoftwareDevice(deviceName,deviceType,menufactorerTextField.getText(),VersionTextField.getText());
+        }
+        else{
+            deviceTypeTextField.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
         deviceMonitor.addDevice(newDevice);
-        deviceNameTextField.clear();
+        clearChoises();
+        refreshListView();
     }
+    @FXML
+    private void showDevice(){
+        refreshListView();
+        selectedDevice = deviceListView.getSelectionModel().getSelectedItem();
+        deviceNameTextField.setText(selectedDevice.getName());
+        deviceTypeTextField.setText(selectedDevice.getDeviceType());
+        menufactorerTextField.setText(selectedDevice.getManufacturer());
+        VersionTextField.setText(selectedDevice.getVersion());
+        if(selectedDevice!=null)
+            deviceRefreshTime.setText(deviceMonitor.showTimes());//selectedDevice.displayTimes());
+    }
+    @FXML
+    private void updateDevice() {
+        refreshListView();
+        if(selectedDevice==null)
+            return;
+        String deviceName = deviceNameTextField.getText();
+        if(deviceAlrdayExist(deviceName) && !selectedDevice.getName().equals(deviceName)){
+            deviceNameTextField.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        String deviceType = deviceTypeTextField.getText().toLowerCase();
+        Device newDevice;
+        if(deviceType.equals("software")){
+            newDevice= new SoftwareDevice(deviceName,deviceType,menufactorerTextField.getText(),VersionTextField.getText());
+
+        }
+        else if(deviceType.equals("hardware")){
+            newDevice= new SoftwareDevice(deviceName,deviceType,menufactorerTextField.getText(),VersionTextField.getText());
+        }
+        else{
+            deviceTypeTextField.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        deviceMonitor.replaceDevice(newDevice,selectedDevice);
+        refreshListView();
+    }
+
+    @FXML
+    private void clearChoises(){
+        deviceNameTextField.clear();
+        deviceTypeTextField.clear();
+        menufactorerTextField.clear();
+        VersionTextField.clear();
+        deviceRefreshTime.setText("");
+        refreshListView();
+    }
+    private boolean deviceAlrdayExist(String deviceName){
+        for(Device temp: deviceMonitor.getDevices()){
+            if(temp.getName().equals(deviceName))
+                return true;
+        }
+        return false;
+    }
+
 
     public void refreshListView() {
         deviceListView.refresh();
