@@ -5,10 +5,18 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.scene.control.Label?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <ListView fx:id="deviceListView" layoutX="45.0" layoutY="46.0" prefHeight="308.0" prefWidth="205.0" />
-        <TextField fx:id="deviceNameTextField" layoutX="277.0" layoutY="46.0" prefWidth="222.0" />
-        <Button fx:id="addDeviceButton" layoutX="277.0" layoutY="84.0" mnemonicParsing="false" onAction="#addDevice" text="Add Device" />
+        <TextField fx:id="deviceNameTextField" layoutX="277.0" layoutY="46.0" prefWidth="222.0" promptText="Enter device name" />
+        <TextField fx:id="deviceTypeTextField" layoutX="277.0" layoutY="84.0" prefWidth="222.0" promptText="Enter device type (hardware/software)" />
+        <TextField fx:id="menufactorerTextField" layoutX="277.0" layoutY="122.0" prefWidth="222.0" promptText="Enter menufactorer name " />
+        <TextField fx:id="VersionTextField" layoutX="277.0" layoutY="160.0" prefWidth="222.0" promptText="Enter Version " />
+        <Button fx:id="addDeviceButton" layoutX="277.0" layoutY="198.0" mnemonicParsing="false" onAction="#addDevice" text="Add Device" />
+        <Button fx:id="showPropDeviceButton" layoutX="367.0" layoutY="198.0" mnemonicParsing="false" onAction="#showDevice" text="Device Properties" />
+        <Button fx:id="UpdateDeviceButton" layoutX="492.5" layoutY="198.0" mnemonicParsing="false" onAction="#updateDevice" text="Update Device" />
+        <Button fx:id="clear" layoutX="277.5" layoutY="238.0" mnemonicParsing="false" onAction="#clearChoises" text="clear" />
+        <Label fx:id="deviceRefreshTime" layoutX="277.0" layoutY="300.0" prefWidth="250.0" prefHeight="150.0" />
     </children>
 </AnchorPane>
